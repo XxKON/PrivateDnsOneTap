@@ -18,11 +18,9 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Instalar Android SDK 36
         run: |
+          echo "y" | sdkmanager --licenses > /dev/null || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
       - name: Configurar Gradle
@@ -34,7 +32,9 @@ jobs:
         run: gradle assembleDebug --no-daemon
 
       - name: Disponibilizar APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: PrivateDNS-APK
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
